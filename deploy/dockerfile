@@ -1,0 +1,35 @@
+FROM java:latest
+MAINTAINER Ryan - huangruiying
+
+COPY app.jar /app.jar
+# 拷贝动态库
+# tesseract
+COPY tesseract_so/liblept.so /usr/local/lib/liblept.so.5
+COPY tesseract_so/libtesseract.so /usr/local/lib/libtesseract.so.4
+COPY tesseract_so/libtesseract.so /usr/lib/libtesseract.so.4
+COPY tesseract_so/libpng15.so.15.13.0 /usr/lib64/libpng15.so.15
+COPY tesseract_so/libjpeg.so.62.1.0 /usr/lib64/libjpeg.so.62
+COPY tesseract_so/libtiff.so.5.2.0 /usr/lib64/libtiff.so.5
+COPY tesseract_so/libgomp.so.1.0.0 /usr/lib64/libgomp.so.1
+COPY tesseract_so/libjbig.so.2.0 /usr/lib64/libjbig.so.2.0
+# phantomjs
+COPY phantomjs_so/libfontconfig.so.1.11.1 /usr/lib/libfontconfig.so.1
+COPY phantomjs_so/libfontconfig.so.1.11.1 /usr/lib64/libfontconfig.so.1
+
+# /usr/local/share/tessdata 训练数据文件位置
+
+# 软件
+COPY tesseract_so/tesseract /usr/bin/tesseract
+#COPY /usr/local/include/tesseract /usr/include/tesseract
+
+# 改变服务器系统时间
+CMD rm -f /etc/localtime
+CMD ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+# 配置环境变量
+CMD echo "export LD_LIBRARY_PATH=:/usr/local/lib:$PATH" >> /etc/profile
+CMD source /etc/profile
+#CMD java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005 -jar  /app.jar
+CMD java -jar  /app.jar
+#EXPOSE 5005
+EXPOSE 8088
